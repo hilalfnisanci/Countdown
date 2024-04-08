@@ -13,3 +13,5 @@ Countdown is an application designed to help users keep track of their upcoming 
 - **iOS 17.4**
 - **Xcode 15.3**
 - **Swift 5.0**
+
+![Resim Açıklaması]()
