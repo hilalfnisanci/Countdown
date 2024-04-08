@@ -14,4 +14,4 @@ Countdown is an application designed to help users keep track of their upcoming 
 - **Xcode 15.3**
 - **Swift 5.0**
 
-![Resim Açıklaması]()
+![](https://github.com/hilalfnisanci/Countdown/blob/main/CountdownPages.png)
