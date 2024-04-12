@@ -65,7 +65,6 @@ struct AddNewEvent: View {
                         .foregroundColor(.orange)
                         .padding()
                 }
-                .background(Circle().foregroundColor(Color.white))
                 
             }
         }

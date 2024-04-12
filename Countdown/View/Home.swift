@@ -130,10 +130,14 @@ struct Home: View {
                 }
                 Button(action: {
                     isDarkMode.toggle()
+                    guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                          let window = windowScene.windows.first else {
+                        return
+                    }
                     if isDarkMode {
-                        UIApplication.shared.windows.first?.overrideUserInterfaceStyle = .dark
+                        window.overrideUserInterfaceStyle = .dark
                     } else {
-                        UIApplication.shared.windows.first?.overrideUserInterfaceStyle = .light
+                        window.overrideUserInterfaceStyle = .light
                     }
                 }) {
                     Image(systemName: isDarkMode ? "sun.max.fill" : "moon.fill")
@@ -150,7 +154,7 @@ struct Home: View {
     }
     
     func groupedEvents() -> [(String, [Countdown])] {
-        var groupedEvents = Dictionary(grouping: events) { $0.eventColor ?? "Card-1" }
+        let groupedEvents = Dictionary(grouping: events) { $0.eventColor ?? "Card-1" }
         let sortedEvents: [(String, [Countdown])] = isFilterSelected ? groupedEvents.sorted(by: { $0.key < $1.key }) : groupedEvents.sorted(by: { $0.value.first!.eventDate! < $1.value.first!.eventDate! })
         return sortedEvents
     }
