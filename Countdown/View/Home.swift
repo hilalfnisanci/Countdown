@@ -47,24 +47,20 @@ struct Home: View {
                                                 Text("\(remainingTime(for: event.eventDate ?? Date())) left")
                                                     .foregroundColor(.gray)
                                             }
-                                            Spacer()
-                                            
-                                            HStack {
-                                                Button(action: {
-                                                    editEvent(event)
-                                                }) {
-                                                    Image(systemName: "pencil.circle")
-                                                        .foregroundColor(.green)
-                                                }
-                                                .buttonStyle(PlainButtonStyle())
-                                                
-                                                Button(action: {
+                                            .swipeActions(edge: .trailing) {
+                                                Button {
                                                     deleteEvent(event)
-                                                }) {
-                                                    Image(systemName: "trash")
-                                                        .foregroundColor(.red)
+                                                } label: {
+                                                    Label("Delete", systemImage: "trash")
                                                 }
-                                                .buttonStyle(PlainButtonStyle())
+                                                .tint(.red)
+                                                
+                                                Button {
+                                                    editEvent(event)
+                                                } label: {
+                                                    Label("Edit", systemImage: "pencil.circle")
+                                                }
+                                                .tint(.indigo)
                                             }
                                         }
                                     }
@@ -82,24 +78,20 @@ struct Home: View {
                                         Text("\(remainingTime(for: event.eventDate ?? Date())) left")
                                             .foregroundColor(.gray)
                                     }
-                                    Spacer()
-                                                            
-                                    HStack {
-                                        Button(action: {
-                                            editEvent(event)
-                                        }) {
-                                            Image(systemName: "pencil.circle")
-                                                .foregroundColor(.green)
-                                        }
-                                        .buttonStyle(PlainButtonStyle())
-                                                                
-                                        Button(action: {
+                                    .swipeActions(edge: .trailing) {
+                                        Button {
                                             deleteEvent(event)
-                                        }) {
-                                            Image(systemName: "trash")
-                                                .foregroundColor(.red)
+                                        } label: {
+                                            Label("Delete", systemImage: "trash")
                                         }
-                                        .buttonStyle(PlainButtonStyle())
+                                        .tint(.red)
+                                        
+                                        Button {
+                                            editEvent(event)
+                                        } label: {
+                                            Label("Edit", systemImage: "pencil.circle")
+                                        }
+                                        .tint(.indigo)
                                     }
                                 }
                             }
@@ -162,8 +154,6 @@ struct Home: View {
         let sortedEvents: [(String, [Countdown])] = isFilterSelected ? groupedEvents.sorted(by: { $0.key < $1.key }) : groupedEvents.sorted(by: { $0.value.first!.eventDate! < $1.value.first!.eventDate! })
         return sortedEvents
     }
-
-
     
     var dateFormatter: DateFormatter {
         let formatter = DateFormatter()
