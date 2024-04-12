@@ -103,5 +103,4 @@ class CountdownViewModel: ObservableObject {
         self.eventColor = "Card-1"
     }
     
-    
 }

@@ -60,17 +60,14 @@ struct AddNewEvent: View {
                     }
                     presentationMode.wrappedValue.dismiss()
                 }) {
-                    Image(systemName: "checkmark")
+                    Image(systemName: "checkmark.circle.fill")
                         .font(.largeTitle)
-                        .foregroundColor(.white)
+                        .foregroundColor(.orange)
                         .padding()
                 }
-                .frame(width: 35, height: 35)
-                .background(Circle().foregroundColor(Color.orange))
-                .clipShape(Circle())
+                .background(Circle().foregroundColor(Color.white))
+                
             }
-            
-            .padding()
         }
         .navigationTitle("Add New Event")
         .onAppear {

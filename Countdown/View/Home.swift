@@ -11,6 +11,7 @@ struct Home: View {
     @FetchRequest(entity: Countdown.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Countdown.eventDate, ascending: true)], predicate: nil, animation: .easeInOut) var events: FetchedResults<Countdown>
     
     @AppStorage("isDarkMode") private var isDarkMode = false
+    @AppStorage("isFilterSelected") private var isFilterSelected = false
     
     @StateObject var countdownModel: CountdownViewModel = .init()
     @State private var isAddEventPresented = false
@@ -36,39 +37,74 @@ struct Home: View {
                     Spacer()
                 } else {
                     List {
-                        ForEach(events, id: \.self) { event in
-                            HStack {
-                                Image(systemName: "circle.fill")
-                                    .foregroundColor(Color(event.eventColor ?? "Card-1"))
-                                    .frame(width: 20, height: 20)
-                                
-                                VStack(alignment: .leading) {
-                                    Text(event.title ?? "Unknown Event")
-                                    Text("\(remainingTime(for: event.eventDate ?? Date())) left")
-                                        .foregroundColor(.gray)
-                                }
-                                Spacer()
-                                
-                                HStack {
-                                    Button(action: {
-                                        editEvent(event)
-                                    }) {
-                                        Image(systemName: "pencil.circle")
-                                            .foregroundColor(.green)
+                        if isFilterSelected {
+                            ForEach(groupedEvents(), id: \.0) { (color, events) in
+                                Section(header: GroupHeaderView(color: color)) {
+                                    ForEach(events, id: \.self) { event in
+                                        HStack {
+                                            VStack(alignment: .leading) {
+                                                Text(event.title ?? "Unknown Event")
+                                                Text("\(remainingTime(for: event.eventDate ?? Date())) left")
+                                                    .foregroundColor(.gray)
+                                            }
+                                            Spacer()
+                                            
+                                            HStack {
+                                                Button(action: {
+                                                    editEvent(event)
+                                                }) {
+                                                    Image(systemName: "pencil.circle")
+                                                        .foregroundColor(.green)
+                                                }
+                                                .buttonStyle(PlainButtonStyle())
+                                                
+                                                Button(action: {
+                                                    deleteEvent(event)
+                                                }) {
+                                                    Image(systemName: "trash")
+                                                        .foregroundColor(.red)
+                                                }
+                                                .buttonStyle(PlainButtonStyle())
+                                            }
+                                        }
                                     }
-                                    .buttonStyle(PlainButtonStyle())
-                                    
-                                    Button(action: {
-                                        deleteEvent(event)
-                                    }) {
-                                        Image(systemName: "trash")
-                                            .foregroundColor(.red)
-                                    }
-                                    .buttonStyle(PlainButtonStyle())
                                 }
                             }
-                            
+                        } else {
+                            ForEach(events, id: \.self) { event in
+                                HStack {
+                                    Image(systemName: "circle.fill")
+                                        .foregroundColor(Color(event.eventColor ?? "Card-1"))
+                                        .frame(width: 20, height: 20)
+                                                            
+                                    VStack(alignment: .leading) {
+                                        Text(event.title ?? "Unknown Event")
+                                        Text("\(remainingTime(for: event.eventDate ?? Date())) left")
+                                            .foregroundColor(.gray)
+                                    }
+                                    Spacer()
+                                                            
+                                    HStack {
+                                        Button(action: {
+                                            editEvent(event)
+                                        }) {
+                                            Image(systemName: "pencil.circle")
+                                                .foregroundColor(.green)
+                                        }
+                                        .buttonStyle(PlainButtonStyle())
+                                                                
+                                        Button(action: {
+                                            deleteEvent(event)
+                                        }) {
+                                            Image(systemName: "trash")
+                                                .foregroundColor(.red)
+                                        }
+                                        .buttonStyle(PlainButtonStyle())
+                                    }
+                                }
+                            }
                         }
+                        
                     }
                 }
                 
@@ -87,16 +123,30 @@ struct Home: View {
                     }
                 }
             }
-            .navigationBarItems(trailing: Button(action: {
-                isDarkMode.toggle()
-                if isDarkMode {
-                    UIApplication.shared.windows.first?.overrideUserInterfaceStyle = .dark
-                } else {
-                    UIApplication.shared.windows.first?.overrideUserInterfaceStyle = .light
+            .navigationBarItems(trailing: HStack {
+                Button(action: {
+                    isFilterSelected.toggle()
+                    if isFilterSelected {
+
+                    }else {
+
+                    }
+                    
+                }) {
+                    Image(systemName: isFilterSelected ? "paintpalette.fill" : "paintpalette")
+                        .foregroundColor(.primary)
                 }
-            }) {
-                Image(systemName: isDarkMode ? "sun.max.fill" : "moon.fill")
-                    .foregroundColor(.primary)
+                Button(action: {
+                    isDarkMode.toggle()
+                    if isDarkMode {
+                        UIApplication.shared.windows.first?.overrideUserInterfaceStyle = .dark
+                    } else {
+                        UIApplication.shared.windows.first?.overrideUserInterfaceStyle = .light
+                    }
+                }) {
+                    Image(systemName: isDarkMode ? "sun.max.fill" : "moon.fill")
+                        .foregroundColor(.primary)
+                }
             })
             .sheet(isPresented: $isAddEventPresented) {
                 AddNewEvent(countdownModel: countdownModel, eventToEdit: eventToEdit)
@@ -106,6 +156,15 @@ struct Home: View {
             }
         }
     }
+    
+    func groupedEvents() -> [(String, [Countdown])] {
+        var groupedEvents = Dictionary(grouping: events) { $0.eventColor ?? "Card-1" }
+        let sortedEvents: [(String, [Countdown])] = isFilterSelected ? groupedEvents.sorted(by: { $0.key < $1.key }) : groupedEvents.sorted(by: { $0.value.first!.eventDate! < $1.value.first!.eventDate! })
+        return sortedEvents
+    }
+
+
+    
     var dateFormatter: DateFormatter {
         let formatter = DateFormatter()
         formatter.dateStyle = .medium
@@ -150,6 +209,17 @@ struct Home: View {
     }
 }
 
+struct GroupHeaderView: View {
+    var color: String
+    
+    var body: some View {
+        HStack {
+            Circle()
+                .fill(Color(color))
+                .frame(width: 20, height: 20)
+        }
+    }
+}
 
 #Preview {
     ContentView()
